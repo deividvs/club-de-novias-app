@@ -5,36 +5,70 @@ import { Label } from '@/components/ui/label'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { useAuth } from '@/hooks/use-auth'
 import { toast } from 'sonner'
+import { extractFieldErrors } from '@/lib/pocketbase/errors'
 
 export default function AuthPage() {
   const [isLogin, setIsLogin] = useState(true)
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
-  const [fieldErrors, setFieldErrors] = useState<{ email?: string }>({})
+  const [fieldErrors, setFieldErrors] = useState<{
+    email?: string
+    password?: string
+    general?: string
+  }>({})
   const { signIn, signUp } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setFieldErrors({})
-    if (!email || !password) return toast.error('Preencha todos os campos')
+
+    // Field Validation
+    const errors: { email?: string; password?: string; general?: string } = {}
+    if (!email) {
+      errors.email = 'O e-mail é obrigatório'
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      errors.email = 'E-mail inválido'
+    }
+
+    if (!password) {
+      errors.password = 'A senha é obrigatória'
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setFieldErrors(errors)
+      return
+    }
+
     setLoading(true)
-    const { error } = isLogin ? await signIn(email, password) : await signUp(email, password)
-    setLoading(false)
-    if (error) {
-      if (isLogin && error?.status === 400) {
-        toast.error('Erro de autenticação', {
-          description: 'E-mail ou senha incorretos. Por favor, tente novamente.',
-        })
-      } else if (!isLogin && error?.response?.data?.email?.code === 'validation_not_unique') {
-        setFieldErrors({
-          email: 'Este e-mail já está em uso. Tente fazer login ou use outro e-mail.',
-        })
-      } else {
-        toast.error('Erro de autenticação', {
-          description: error.message || 'Verifique suas credenciais.',
-        })
+    try {
+      const { error } = isLogin ? await signIn(email, password) : await signUp(email, password)
+      setLoading(false)
+
+      if (error) {
+        const extractedErrors = extractFieldErrors(error)
+
+        if (isLogin && (error?.status === 400 || error?.message === 'Failed to authenticate.')) {
+          setFieldErrors({
+            general: 'E-mail ou senha incorretos',
+          })
+        } else if (!isLogin && extractedErrors.email) {
+          setFieldErrors({
+            email: extractedErrors.email.includes('unique')
+              ? 'Este e-mail já está em uso. Tente fazer login ou use outro e-mail.'
+              : extractedErrors.email,
+          })
+        } else {
+          toast.error(isLogin ? 'Erro no login' : 'Erro no cadastro', {
+            description: error?.message || 'Verifique suas credenciais.',
+          })
+        }
       }
+    } catch (err: any) {
+      setLoading(false)
+      toast.error('Erro inesperado', {
+        description: err?.message || 'Ocorreu um erro ao processar sua solicitação.',
+      })
     }
   }
 
@@ -50,7 +84,7 @@ export default function AuthPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4" noValidate>
             <div className="space-y-2 text-left">
               <Label>Email</Label>
               <Input
@@ -60,7 +94,6 @@ export default function AuthPage() {
                 className={
                   fieldErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''
                 }
-                required
               />
               {fieldErrors.email && <p className="text-sm text-destructive">{fieldErrors.email}</p>}
             </div>
@@ -70,9 +103,21 @@ export default function AuthPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+                className={
+                  fieldErrors.password ? 'border-destructive focus-visible:ring-destructive' : ''
+                }
               />
+              {fieldErrors.password && (
+                <p className="text-sm text-destructive">{fieldErrors.password}</p>
+              )}
             </div>
+
+            {fieldErrors.general && (
+              <div className="p-3 bg-destructive/10 text-destructive text-sm rounded-md text-center">
+                {fieldErrors.general}
+              </div>
+            )}
+
             <Button
               type="submit"
               disabled={loading}
