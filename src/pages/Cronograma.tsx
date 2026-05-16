@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { format, parseISO, isBefore, isSameMonth } from 'date-fns'
+import { format, parseISO, isBefore } from 'date-fns'
 import { ptBR } from 'date-fns/locale'
 import { CheckCircle2, Circle, Clock } from 'lucide-react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -16,12 +16,7 @@ export default function Cronograma() {
   const { tasks, toggleTask } = useAppContext()
   const [activeTab, setActiveTab] = useState('mensal')
 
-  const sortedTasks = [...tasks].sort(
-    (a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime(),
-  )
-
-  // Group tasks by month (e.g., "Maio 2024")
-  const groupedByMonth = sortedTasks.reduce(
+  const groupedByMonth = tasks.reduce(
     (acc, task) => {
       const monthKey = format(parseISO(task.dueDate), 'MMMM yyyy', { locale: ptBR })
       if (!acc[monthKey]) acc[monthKey] = []
@@ -31,9 +26,15 @@ export default function Cronograma() {
     {} as Record<string, typeof tasks>,
   )
 
-  const overdueTasks = sortedTasks.filter(
+  const overdueTasks = tasks.filter(
     (t) => !t.completed && isBefore(parseISO(t.dueDate), new Date()),
   )
+
+  const mapPriority = (p: string) => {
+    if (p === 'high') return 'Alta'
+    if (p === 'medium') return 'Média'
+    return 'Baixa'
+  }
 
   const TaskRow = ({ task }: { task: (typeof tasks)[0] }) => (
     <div
@@ -64,14 +65,14 @@ export default function Cronograma() {
         <span
           className={cn(
             'text-[10px] px-1.5 py-0.5 rounded font-medium',
-            task.priority === 'Alta'
+            task.priority === 'high'
               ? 'bg-red-100 text-red-700'
-              : task.priority === 'Média'
+              : task.priority === 'medium'
                 ? 'bg-amber-100 text-amber-700'
                 : 'bg-green-100 text-green-700',
           )}
         >
-          {task.priority}
+          {mapPriority(task.priority)}
         </span>
         <span className="text-[10px] text-muted-foreground flex items-center gap-1">
           <Clock className="w-3 h-3" /> {format(parseISO(task.dueDate), 'dd/MM')}
@@ -104,7 +105,9 @@ export default function Cronograma() {
           <Accordion
             type="multiple"
             className="w-full space-y-3"
-            defaultValue={[Object.keys(groupedByMonth)[0]]}
+            defaultValue={
+              Object.keys(groupedByMonth).length > 0 ? [Object.keys(groupedByMonth)[0]] : []
+            }
           >
             {Object.entries(groupedByMonth).map(([month, monthTasks]) => {
               const completedCount = monthTasks.filter((t) => t.completed).length

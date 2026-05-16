@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Plus, Download, Trash2 } from 'lucide-react'
+import { Plus, Download, Trash2, Pencil } from 'lucide-react'
 import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
@@ -31,13 +31,12 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog'
 import { BudgetChart } from '@/components/budget/BudgetChart'
-import { useAppContext } from '@/context/app-context'
+import { useAppContext, Expense } from '@/context/app-context'
 import { formatCurrency } from '@/lib/utils'
-import type { ExpenseCategory } from '@/lib/types'
 
-const CATEGORIES: { name: ExpenseCategory; color: string; defaultTarget: number }[] = [
+const CATEGORIES: { name: string; color: string; defaultTarget: number }[] = [
   { name: 'Espaço', color: 'hsl(var(--chart-1))', defaultTarget: 0.35 },
-  { name: 'Comida', color: 'hsl(var(--chart-2))', defaultTarget: 0.25 },
+  { name: 'Comida/Bebida', color: 'hsl(var(--chart-2))', defaultTarget: 0.25 },
   { name: 'Foto/Vídeo', color: 'hsl(var(--chart-3))', defaultTarget: 0.1 },
   { name: 'Roupas', color: 'hsl(var(--chart-4))', defaultTarget: 0.1 },
   { name: 'Decoração', color: 'hsl(var(--chart-5))', defaultTarget: 0.1 },
@@ -48,40 +47,86 @@ const CATEGORIES: { name: ExpenseCategory; color: string; defaultTarget: number 
 ]
 
 export default function Orcamento() {
-  const { user, expenses, addExpense, toggleExpensePaid, removeExpense } = useAppContext()
+  const { user, expenses, addExpense, updateExpense, toggleExpensePaid, removeExpense } =
+    useAppContext()
   const [open, setOpen] = useState(false)
+  const [editingId, setEditingId] = useState<string | null>(null)
+
   const [newExpense, setNewExpense] = useState({
     category: 'Espaço',
     description: '',
-    amount: '',
+    amountPlanned: '',
+    amountActual: '',
     vendorName: '',
   })
 
-  const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0)
+  // We use amountPlanned to chart if amountActual is not defined or 0, so the progress behaves smoothly
+  const totalSpent = expenses.reduce(
+    (acc, curr) => acc + (curr.amountActual || curr.amountPlanned || 0),
+    0,
+  )
 
   const chartData = CATEGORIES.map((cat) => ({
     name: cat.name,
-    value: expenses.filter((e) => e.category === cat.name).reduce((acc, e) => acc + e.amount, 0),
+    value: expenses
+      .filter((e) => e.category === cat.name)
+      .reduce((acc, e) => acc + (e.amountActual || e.amountPlanned || 0), 0),
     color: cat.color,
   })).filter((d) => d.value > 0)
 
-  // If no expenses, show a small grey sliver for visuals
   if (chartData.length === 0)
     chartData.push({ name: 'Vazio', value: 1, color: 'hsl(var(--muted))' })
 
-  const handleSave = () => {
-    if (!newExpense.description || !newExpense.amount) return
-    addExpense({
-      id: Math.random().toString(),
-      category: newExpense.category as ExpenseCategory,
-      description: newExpense.description,
-      amount: Number(newExpense.amount),
-      vendorName: newExpense.vendorName,
-      date: new Date().toISOString(),
-      paid: false,
+  const handleOpenNew = () => {
+    setEditingId(null)
+    setNewExpense({
+      category: 'Espaço',
+      description: '',
+      amountPlanned: '',
+      amountActual: '',
+      vendorName: '',
     })
+    setOpen(true)
+  }
+
+  const handleOpenEdit = (exp: Expense) => {
+    setEditingId(exp.id)
+    setNewExpense({
+      category: exp.category,
+      description: exp.description,
+      amountPlanned: exp.amountPlanned ? exp.amountPlanned.toString() : '',
+      amountActual: exp.amountActual ? exp.amountActual.toString() : '',
+      vendorName: exp.vendorName || '',
+    })
+    setOpen(true)
+  }
+
+  const handleSave = () => {
+    if (!newExpense.description || !newExpense.amountPlanned) return
+
+    if (editingId) {
+      updateExpense(editingId, {
+        category: newExpense.category,
+        description: newExpense.description,
+        amountPlanned: Number(newExpense.amountPlanned),
+        amountActual: Number(newExpense.amountActual || 0),
+        vendorName: newExpense.vendorName,
+      })
+      toast.success('Gasto atualizado com sucesso!')
+    } else {
+      addExpense({
+        category: newExpense.category,
+        description: newExpense.description,
+        amountPlanned: Number(newExpense.amountPlanned),
+        amountActual: Number(newExpense.amountActual || 0),
+        amountPaid: 0,
+        vendorName: newExpense.vendorName,
+        status: 'pending',
+        notes: '',
+      })
+      toast.success('Gasto adicionado com sucesso!')
+    }
     setOpen(false)
-    setNewExpense({ category: 'Espaço', description: '', amount: '', vendorName: '' })
   }
 
   const handleDelete = (id: string) => {
@@ -103,14 +148,16 @@ export default function Orcamento() {
       <div className="flex justify-between items-center mt-8 mb-4">
         <h2 className="font-display text-2xl">Categorias</h2>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger asChild>
-            <Button size="sm" className="gap-1 bg-primary text-primary-foreground">
-              <Plus className="w-4 h-4" /> Adicionar
-            </Button>
-          </DialogTrigger>
+          <Button
+            size="sm"
+            onClick={handleOpenNew}
+            className="gap-1 bg-primary text-primary-foreground"
+          >
+            <Plus className="w-4 h-4" /> Adicionar
+          </Button>
           <DialogContent className="sm:max-w-[425px]">
             <DialogHeader>
-              <DialogTitle>Novo Gasto</DialogTitle>
+              <DialogTitle>{editingId ? 'Editar Gasto' : 'Novo Gasto'}</DialogTitle>
             </DialogHeader>
             <div className="grid gap-4 py-4">
               <div className="space-y-2">
@@ -147,14 +194,27 @@ export default function Orcamento() {
                   placeholder="Nome da empresa"
                 />
               </div>
-              <div className="space-y-2">
-                <Label>Valor Total</Label>
-                <Input
-                  type="number"
-                  value={newExpense.amount}
-                  onChange={(e) => setNewExpense({ ...newExpense, amount: e.target.value })}
-                  placeholder="0.00"
-                />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label>Valor Planejado</Label>
+                  <Input
+                    type="number"
+                    value={newExpense.amountPlanned}
+                    onChange={(e) =>
+                      setNewExpense({ ...newExpense, amountPlanned: e.target.value })
+                    }
+                    placeholder="0.00"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Valor Gasto Real</Label>
+                  <Input
+                    type="number"
+                    value={newExpense.amountActual}
+                    onChange={(e) => setNewExpense({ ...newExpense, amountActual: e.target.value })}
+                    placeholder="0.00"
+                  />
+                </div>
               </div>
               <Button onClick={handleSave} className="w-full mt-2">
                 Salvar Gasto
@@ -168,7 +228,10 @@ export default function Orcamento() {
         {CATEGORIES.map((cat) => {
           const catExpenses = expenses.filter((e) => e.category === cat.name)
           if (catExpenses.length === 0) return null
-          const spent = catExpenses.reduce((sum, e) => sum + e.amount, 0)
+          const spent = catExpenses.reduce(
+            (sum, e) => sum + (e.amountActual || e.amountPlanned || 0),
+            0,
+          )
           const budgetTarget = user.totalBudget * cat.defaultTarget
 
           return (
@@ -190,24 +253,38 @@ export default function Orcamento() {
                   {catExpenses.map((exp) => (
                     <div
                       key={exp.id}
-                      className="flex justify-between items-center bg-secondary/30 p-2 rounded text-sm"
+                      className="flex flex-col sm:flex-row sm:justify-between sm:items-center bg-secondary/30 p-3 rounded text-sm gap-2"
                     >
                       <div>
                         <p className="font-medium">{exp.description}</p>
-                        {exp.vendorName && (
-                          <p className="text-xs text-muted-foreground">{exp.vendorName}</p>
-                        )}
+                        <p className="text-xs text-muted-foreground">
+                          {exp.vendorName ? `${exp.vendorName} • ` : ''}
+                          Plan: {formatCurrency(exp.amountPlanned)}
+                        </p>
                       </div>
-                      <div className="flex items-center gap-3">
-                        <span className="font-medium">{formatCurrency(exp.amount)}</span>
+                      <div className="flex items-center gap-2 self-end sm:self-auto">
+                        <span className="font-medium">
+                          {formatCurrency(exp.amountActual || exp.amountPlanned)}
+                        </span>
+
                         <Button
                           variant="ghost"
                           size="sm"
                           onClick={() => toggleExpensePaid(exp.id)}
-                          className={`h-7 px-2 text-xs ${exp.paid ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'}`}
+                          className={`h-7 px-2 text-xs ${exp.status === 'paid' ? 'text-green-600 bg-green-50' : 'text-amber-600 bg-amber-50'}`}
                         >
-                          {exp.paid ? 'Pago' : 'Pendente'}
+                          {exp.status === 'paid' ? 'Pago' : 'Pendente'}
                         </Button>
+
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => handleOpenEdit(exp)}
+                          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+                        >
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+
                         <AlertDialog>
                           <AlertDialogTrigger asChild>
                             <Button

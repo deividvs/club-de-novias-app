@@ -13,17 +13,20 @@ const NAV_ITEMS = [
 ]
 
 export default function Layout() {
-  const { user } = useAppContext()
+  const { user, isLoaded } = useAppContext()
   const location = useLocation()
   const navigate = useNavigate()
   const isOnboarding = location.pathname === '/onboarding'
   const isSubPage = location.pathname.split('/').length > 2
 
   useEffect(() => {
-    if (!user.onboarded && !isOnboarding) {
+    if (isLoaded && !user.onboarded && !isOnboarding) {
       navigate('/onboarding')
     }
-  }, [user.onboarded, isOnboarding, navigate])
+  }, [user.onboarded, isLoaded, isOnboarding, navigate])
+
+  if (!isLoaded)
+    return <div className="min-h-screen flex items-center justify-center">Carregando...</div>
 
   if (isOnboarding) return <Outlet />
 

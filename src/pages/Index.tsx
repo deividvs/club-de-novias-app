@@ -1,28 +1,24 @@
 import { Link } from 'react-router-dom'
-import {
-  PlusCircle,
-  Calendar as CalIcon,
-  MessageCircle,
-  Library,
-  CheckCircle2,
-  Circle,
-} from 'lucide-react'
+import { PlusCircle, Calendar as CalIcon, MessageCircle, Library, Circle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAppContext } from '@/context/app-context'
 import { formatCurrency, getDaysLeft } from '@/lib/utils'
-import { toast } from '@/hooks/use-toast'
+import { toast } from 'sonner'
 
 export default function Index() {
   const { user, tasks, expenses, toggleTask } = useAppContext()
 
   const daysLeft = getDaysLeft(user.weddingDate)
-  const totalSpent = expenses.reduce((acc, curr) => acc + curr.amount, 0)
+  const totalSpent = expenses.reduce(
+    (acc, curr) => acc + (curr.amountActual || curr.amountPlanned || 0),
+    0,
+  )
   const completedTasks = tasks.filter((t) => t.completed).length
   const urgentTasks = tasks.filter((t) => !t.completed).slice(0, 3)
 
   const handleComplete = (id: string) => {
     toggleTask(id)
-    toast({ title: 'Sucesso!', description: 'Tarefa concluída com sucesso! 🎉' })
+    toast.success('Tarefa concluída com sucesso! 🎉')
   }
 
   return (
@@ -85,7 +81,7 @@ export default function Index() {
         </div>
         <div className="space-y-3">
           {urgentTasks.length === 0 ? (
-            <p className="text-muted-foreground text-sm italic">Nenhuma tarefa urgente. Relaxe!</p>
+            <p className="text-muted-foreground text-sm italic">Nenhuma tarefa pendente. Relaxe!</p>
           ) : (
             urgentTasks.map((task) => (
               <div

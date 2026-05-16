@@ -11,24 +11,26 @@ import { Progress } from '@/components/ui/progress'
 
 const CONCERNS = [
   'Estourar o orçamento',
-  'Falta de tempo',
+  'Não dar tempo',
   'Pressão da família',
   'Não saber por onde começar',
-  'Fornecedores não confiáveis',
+  'Casamento parecer simples demais',
 ]
 
 export default function Onboarding() {
   const [step, setStep] = useState(1)
   const { user, setUser } = useAppContext()
   const navigate = useNavigate()
+  const [loading, setLoading] = useState(false)
 
   const [formData, setFormData] = useState({
-    name: '',
-    weddingDate: '',
-    guestCount: 100,
-    totalBudget: 8000,
-    location: '',
-    concerns: [] as string[],
+    name: user.name || '',
+    weddingDate: user.weddingDate || '',
+    guestCount: user.guestCount || 100,
+    totalBudget: user.totalBudget || 8000,
+    locationCity: user.locationCity || '',
+    locationState: user.locationState || '',
+    concerns: user.concerns || ([] as string[]),
   })
 
   const updateForm = (key: string, value: any) => setFormData((prev) => ({ ...prev, [key]: value }))
@@ -37,8 +39,10 @@ export default function Onboarding() {
     if (step < 6) setStep((s) => s + 1)
   }
 
-  const handleFinish = () => {
-    setUser({ ...user, ...formData, onboarded: true })
+  const handleFinish = async () => {
+    setLoading(true)
+    await setUser({ ...formData, onboarded: true })
+    setLoading(false)
     navigate('/')
   }
 
@@ -114,13 +118,21 @@ export default function Onboarding() {
 
             {step === 5 && (
               <div className="space-y-4 animate-fade-in">
-                <h2 className="font-display text-2xl text-center">Onde será o casamento?</h2>
-                <Input
-                  value={formData.location}
-                  onChange={(e) => updateForm('location', e.target.value)}
-                  placeholder="Cidade - Estado"
-                  className="text-center"
-                />
+                <h2 className="font-display text-2xl text-center mb-4">Onde será o casamento?</h2>
+                <div className="space-y-3">
+                  <Input
+                    value={formData.locationCity}
+                    onChange={(e) => updateForm('locationCity', e.target.value)}
+                    placeholder="Cidade"
+                    className="text-center"
+                  />
+                  <Input
+                    value={formData.locationState}
+                    onChange={(e) => updateForm('locationState', e.target.value)}
+                    placeholder="Estado"
+                    className="text-center"
+                  />
+                </div>
               </div>
             )}
 
@@ -157,7 +169,12 @@ export default function Onboarding() {
 
         <div className="flex gap-4">
           {step > 1 && (
-            <Button variant="outline" onClick={() => setStep((s) => s - 1)} className="flex-1">
+            <Button
+              variant="outline"
+              onClick={() => setStep((s) => s - 1)}
+              className="flex-1"
+              disabled={loading}
+            >
               Voltar
             </Button>
           )}
@@ -166,8 +183,12 @@ export default function Onboarding() {
               Próximo
             </Button>
           ) : (
-            <Button onClick={handleFinish} className="flex-1 bg-primary hover:bg-primary/90">
-              Ver meu plano →
+            <Button
+              onClick={handleFinish}
+              disabled={loading}
+              className="flex-1 bg-primary hover:bg-primary/90"
+            >
+              {loading ? 'Salvando...' : 'Ver meu plano →'}
             </Button>
           )}
         </div>

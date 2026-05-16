@@ -3,27 +3,37 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { useAppContext } from '@/context/app-context'
+import { useAuth } from '@/hooks/use-auth'
 import { MessageCircle, Settings, LogOut, Download } from 'lucide-react'
-import { toast } from '@/hooks/use-toast'
-import { useState } from 'react'
+import { toast } from 'sonner'
+import { useState, useEffect } from 'react'
 
 export default function Perfil() {
   const { user, setUser } = useAppContext()
+  const { signOut } = useAuth()
+
   const [formData, setFormData] = useState({
-    name: user.name,
+    name: user.name || '',
     weddingDate: user.weddingDate || '',
-    guestCount: user.guestCount,
+    guestCount: user.guestCount || 100,
   })
 
-  const handleSave = () => {
-    setUser({ ...user, ...formData })
-    toast({ title: 'Perfil atualizado', description: 'Suas informações foram salvas.' })
+  useEffect(() => {
+    setFormData({
+      name: user.name || '',
+      weddingDate: user.weddingDate || '',
+      guestCount: user.guestCount || 100,
+    })
+  }, [user])
+
+  const handleSave = async () => {
+    await setUser(formData)
+    toast.success('Perfil atualizado com sucesso!')
   }
 
-  const handleReset = () => {
-    if (confirm('Tem certeza? Isso apagará todo o seu progresso local.')) {
-      localStorage.clear()
-      window.location.href = '/'
+  const handleSignOut = () => {
+    if (confirm('Tem certeza que deseja sair?')) {
+      signOut()
     }
   }
 
@@ -91,10 +101,10 @@ export default function Perfil() {
         </Button>
         <Button
           variant="ghost"
-          onClick={handleReset}
+          onClick={handleSignOut}
           className="flex-1 text-destructive hover:bg-destructive/10 gap-2"
         >
-          <LogOut className="w-4 h-4" /> Resetar Aplicativo
+          <LogOut className="w-4 h-4" /> Sair da conta
         </Button>
       </div>
     </div>
