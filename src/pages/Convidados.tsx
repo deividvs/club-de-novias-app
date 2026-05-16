@@ -13,6 +13,7 @@ import { Dashboard } from '@/components/convidados/Dashboard'
 import { GuestTable } from '@/components/convidados/GuestTable'
 import { Scenarios } from '@/components/convidados/Scenarios'
 import { MessageCard } from '@/components/convidados/MessageCard'
+import { calculateScore, getScoreLabel } from '@/lib/guest-logic'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import {
   Select,
@@ -101,7 +102,17 @@ export default function Convidados() {
 
   const exportCSV = () => {
     if (!guests.length) return
-    const headers = ['Nome', 'Grupo', 'Risco', 'Presença', 'Custo', 'Status Manual', 'Notas']
+    const headers = [
+      'Nome',
+      'Grupo',
+      'Risco',
+      'Presença',
+      'Score',
+      'Recomendação',
+      'Custo',
+      'Status Manual',
+      'Notas',
+    ]
 
     const escapeCsv = (val: any) => {
       if (val === null || val === undefined) return '""'
@@ -109,17 +120,20 @@ export default function Convidados() {
       return `"${str.replace(/"/g, '""')}"`
     }
 
-    const rows = guests.map((g) =>
-      [
+    const rows = guests.map((g) => {
+      const score = calculateScore(g, simulation?.cost_per_person || 0)
+      return [
         escapeCsv(g.name),
-        escapeCsv(g.relationship_group),
+        escapeCsv(g.relationship_group.replace('_', ' ')),
         escapeCsv(g.social_risk),
         escapeCsv(g.presence_probability),
+        escapeCsv(score),
+        escapeCsv(getScoreLabel(score)),
         escapeCsv(g.individual_cost || simulation?.cost_per_person || 0),
         escapeCsv(g.manual_status),
         escapeCsv(g.notes),
-      ].join(','),
-    )
+      ].join(',')
+    })
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n')
     const encodedUri = encodeURI(csvContent)
     const link = document.createElement('a')

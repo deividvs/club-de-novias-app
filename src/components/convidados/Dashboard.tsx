@@ -21,7 +21,7 @@ export function Dashboard({
   let ViabilityIcon = CheckCircle
   if (budgetRatio > 75) {
     viabilityColor = 'text-red-600'
-    viabilityText = 'Inviável para casamento econômico'
+    viabilityText = 'Inviável'
     ViabilityIcon = AlertTriangle
   } else if (budgetRatio > 55) {
     viabilityColor = 'text-orange-500'
@@ -29,7 +29,7 @@ export function Dashboard({
     ViabilityIcon = AlertTriangle
   } else if (budgetRatio > 40) {
     viabilityColor = 'text-yellow-600'
-    viabilityText = 'Atenção: orçamento pressionado'
+    viabilityText = 'Atenção'
     ViabilityIcon = Info
   }
 
