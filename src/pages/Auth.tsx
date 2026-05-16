@@ -22,7 +22,11 @@ export default function AuthPage() {
     const { error } = isLogin ? await signIn(email, password) : await signUp(email, password)
     setLoading(false)
     if (error) {
-      if (!isLogin && error?.response?.data?.email?.code === 'validation_not_unique') {
+      if (isLogin && error?.status === 400) {
+        toast.error('Erro de autenticação', {
+          description: 'E-mail ou senha incorretos. Por favor, tente novamente.',
+        })
+      } else if (!isLogin && error?.response?.data?.email?.code === 'validation_not_unique') {
         setFieldErrors({
           email: 'Este e-mail já está em uso. Tente fazer login ou use outro e-mail.',
         })
