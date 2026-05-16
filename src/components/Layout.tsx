@@ -1,5 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import { Home, PieChart, CalendarDays, BookOpen, User, ArrowLeft } from 'lucide-react'
+import { Home, PieChart, CalendarDays, BookOpen, User, ArrowLeft, Calculator } from 'lucide-react'
 import { useAppContext } from '@/context/app-context'
 import { useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -7,6 +7,7 @@ import { cn } from '@/lib/utils'
 const NAV_ITEMS = [
   { path: '/', label: 'Início', icon: Home },
   { path: '/orcamento', label: 'Orçamento', icon: PieChart },
+  { path: '/simulador', label: 'Simulador', icon: Calculator },
   { path: '/cronograma', label: 'Cronograma', icon: CalendarDays },
   { path: '/biblioteca', label: 'Biblioteca', icon: BookOpen },
   { path: '/perfil', label: 'Perfil', icon: User },
@@ -33,7 +34,7 @@ export default function Layout() {
   return (
     <div className="flex min-h-screen bg-background text-foreground font-sans">
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 border-r bg-card fixed h-full p-4 z-10">
+      <aside className="hidden md:flex flex-col w-64 border-r bg-card fixed h-full p-4 z-10 print:hidden">
         <div className="flex items-center gap-2 mb-10 px-2">
           <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-display font-bold text-xl leading-none">
@@ -67,7 +68,7 @@ export default function Layout() {
       {/* Main Content */}
       <main className="flex-1 md:ml-64 flex flex-col pb-20 md:pb-0 min-h-screen">
         {/* Mobile/Subpage Header */}
-        <header className="md:hidden sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b px-4 h-14 flex items-center justify-center">
+        <header className="md:hidden sticky top-0 z-20 bg-background/80 backdrop-blur-md border-b px-4 h-14 flex items-center justify-center print:hidden">
           {isSubPage && (
             <button
               onClick={() => navigate(-1)}
@@ -85,7 +86,7 @@ export default function Layout() {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="md:hidden fixed bottom-0 w-full bg-card border-t flex justify-around items-center h-16 pb-safe z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)]">
+      <nav className="md:hidden fixed bottom-0 w-full bg-card border-t flex justify-around items-center h-16 pb-safe z-30 shadow-[0_-4px_20px_rgba(0,0,0,0.05)] print:hidden">
         {NAV_ITEMS.map((item) => {
           const isActive = location.pathname === item.path
           return (

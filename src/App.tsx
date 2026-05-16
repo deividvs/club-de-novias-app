@@ -11,6 +11,7 @@ import NotFound from './pages/NotFound'
 import Index from './pages/Index'
 import Onboarding from './pages/Onboarding'
 import Orcamento from './pages/Orcamento'
+import Simulador from './pages/Simulador'
 import Cronograma from './pages/Cronograma'
 import Biblioteca from './pages/Biblioteca'
 import Perfil from './pages/Perfil'
@@ -41,6 +42,7 @@ const App = () => (
               <Route path="/" element={<Index />} />
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/orcamento" element={<Orcamento />} />
+              <Route path="/simulador" element={<Simulador />} />
               <Route path="/cronograma" element={<Cronograma />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/perfil" element={<Perfil />} />
