@@ -30,6 +30,7 @@ export function GuestForm({
     presence_probability: guest?.presence_probability || 'alta',
     individual_cost: guest?.individual_cost || simulation.cost_per_person,
     notes: guest?.notes || '',
+    manual_status: guest?.manual_status || 'auto',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -129,6 +130,29 @@ export function GuestForm({
             onChange={(e) => setFormData({ ...formData, individual_cost: Number(e.target.value) })}
           />
         </div>
+      </div>
+
+      <div className="space-y-2">
+        <Label>Status Manual (Forçar lista)</Label>
+        <Select
+          value={formData.manual_status}
+          onValueChange={(v) => setFormData({ ...formData, manual_status: v })}
+        >
+          <SelectTrigger>
+            <SelectValue placeholder="Automático (pelo score)" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="auto">Automático (pelo score)</SelectItem>
+            <SelectItem value="lista_ideal">Forçar na Lista Ideal</SelectItem>
+            <SelectItem value="lista_enxuta">Forçar na Lista Enxuta</SelectItem>
+            <SelectItem value="lista_sem_culpa">Forçar na Lista Sem Culpa</SelectItem>
+            <SelectItem value="fora">Fora da lista sugerida</SelectItem>
+          </SelectContent>
+        </Select>
+        <p className="text-[10px] text-muted-foreground leading-tight mt-1">
+          Use esta opção caso queira sobrepor a recomendação automática e forçar a presença deste
+          convidado em um cenário específico.
+        </p>
       </div>
 
       <div className="space-y-2">

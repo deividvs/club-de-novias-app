@@ -16,7 +16,22 @@ export function MessageCard() {
 
   return (
     <div className="mt-8 bg-[#fdfaf6] border border-[#e8dfd5] p-6 rounded-xl relative">
-      <h3 className="text-lg font-display font-bold text-[#8a7a6c] mb-3">Mensagem Elegante</h3>
+      <div className="flex items-center justify-between mb-3">
+        <h3 className="text-lg font-display font-bold text-[#8a7a6c]">Mensagem Elegante</h3>
+        <Button
+          variant="outline"
+          size="sm"
+          className="text-[#8a7a6c] border-[#e8dfd5] hover:bg-[#fdfaf6]"
+          onClick={handleCopy}
+        >
+          {copied ? (
+            <Check className="w-4 h-4 mr-2 text-green-600" />
+          ) : (
+            <Copy className="w-4 h-4 mr-2" />
+          )}
+          {copied ? 'Copiado!' : 'Gerar mensagem elegante'}
+        </Button>
+      </div>
       <p className="text-sm text-muted-foreground mb-4">
         Use este modelo para avisar delicadamente pessoas que não poderão ser convidadas, mantendo a
         amizade e sem citar problemas financeiros.
@@ -24,14 +39,6 @@ export function MessageCard() {
 
       <div className="bg-white p-4 rounded-lg border text-[#5c544d] italic font-serif relative">
         "{mensagem}"
-        <Button
-          variant="ghost"
-          size="sm"
-          className="absolute top-2 right-2 text-[#8a7a6c] hover:bg-[#fdfaf6]"
-          onClick={handleCopy}
-        >
-          {copied ? <Check className="w-4 h-4 text-green-600" /> : <Copy className="w-4 h-4" />}
-        </Button>
       </div>
     </div>
   )

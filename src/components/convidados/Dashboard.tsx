@@ -29,7 +29,7 @@ export function Dashboard({
   let ViabilityIcon = CheckCircle
   if (budgetRatio > 75) {
     viabilityColor = 'text-red-600'
-    viabilityText = 'Inviável'
+    viabilityText = `Inviável para R$ ${simulation.total_budget.toFixed(2)}`
     ViabilityIcon = AlertTriangle
   } else if (budgetRatio > 55) {
     viabilityColor = 'text-orange-500'
@@ -37,24 +37,27 @@ export function Dashboard({
     ViabilityIcon = AlertTriangle
   } else if (budgetRatio > 40) {
     viabilityColor = 'text-yellow-600'
-    viabilityText = 'Atenção'
+    viabilityText = 'Atenção: orçamento pressionado'
     ViabilityIcon = Info
   }
 
-  const savingsColleagues = guests
-    .filter((g) => g.relationship_group === 'colega')
-    .reduce((acc, g) => acc + (g.individual_cost || simulation.cost_per_person), 0)
+  const colleagues = guests.filter((g) => g.relationship_group === 'colega')
+  const obligations = guests.filter((g) => g.relationship_group === 'obrigação_social')
 
-  const savingsObligations = guests
-    .filter((g) => g.relationship_group === 'obrigação_social')
-    .reduce((acc, g) => acc + (g.individual_cost || simulation.cost_per_person), 0)
+  const savingsColleagues = colleagues.reduce(
+    (acc, g) => acc + (g.individual_cost || simulation.cost_per_person),
+    0,
+  )
+  const savingsObligations = obligations.reduce(
+    (acc, g) => acc + (g.individual_cost || simulation.cost_per_person),
+    0,
+  )
 
   const diffBudget = simulation.total_budget - totalCost
   const statusOrçamentoText = diffBudget >= 0 ? 'sobra' : 'passa'
 
   return (
     <div className="space-y-6">
-      {/* Financial Summary Card */}
       <Card className="bg-[#fdfaf6] border-[#e8dfd5] shadow-sm">
         <CardHeader className="pb-3">
           <CardTitle className="text-xl font-display font-bold text-[#8a7a6c] flex items-center gap-2">
@@ -129,12 +132,14 @@ export function Dashboard({
         </Card>
       </div>
 
-      <h3 className="text-lg font-medium text-[#8a7a6c] mt-6 mb-3">Cartões de Economia</h3>
+      <h3 className="text-lg font-medium text-[#8a7a6c] mt-6 mb-3">
+        Cartões de Economia Potencial
+      </h3>
       <div className="grid md:grid-cols-2 gap-4">
-        <Card className="shadow-sm">
+        <Card className="shadow-sm border-[#e8dfd5]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
-              <TrendingDown className="w-4 h-4" /> Se remover todos os colegas...
+              <TrendingDown className="w-4 h-4" /> Se remover {colleagues.length} colegas...
             </CardTitle>
           </CardHeader>
           <CardContent>
@@ -143,10 +148,11 @@ export function Dashboard({
             </div>
           </CardContent>
         </Card>
-        <Card className="shadow-sm">
+        <Card className="shadow-sm border-[#e8dfd5]">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
-              <TrendingDown className="w-4 h-4" /> Se remover obrigações sociais...
+              <TrendingDown className="w-4 h-4" /> Se remover {obligations.length} obrigações
+              sociais...
             </CardTitle>
           </CardHeader>
           <CardContent>
