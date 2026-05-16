@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
-import { Printer, ArrowLeft } from 'lucide-react'
+import { Badge } from '@/components/ui/badge'
+import { Printer, ArrowLeft, Heart, Hand, ShieldCheck } from 'lucide-react'
 import { formatCurrency } from '@/lib/utils'
 import { SimulationResultData, SimulationData } from '@/lib/simulador-logic'
 
@@ -17,6 +18,32 @@ export function SimulationResult({ data, result, onBack }: SimulationResultProps
     if (v === 'Confortável para casamento simples')
       return 'bg-green-50 text-green-700 border-green-200'
     return 'bg-blue-50 text-blue-700 border-blue-200'
+  }
+
+  const getLabelBadge = (label?: string | null) => {
+    if (!label) return null
+    if (label === 'Prioridade') {
+      return (
+        <Badge variant="default" className="gap-1 bg-amber-500 hover:bg-amber-600">
+          <Heart className="w-3 h-3" /> Prioridade
+        </Badge>
+      )
+    }
+    if (label === 'DIY') {
+      return (
+        <Badge variant="secondary" className="gap-1">
+          <Hand className="w-3 h-3" /> DIY
+        </Badge>
+      )
+    }
+    if (label === 'Inegociável') {
+      return (
+        <Badge variant="outline" className="gap-1 border-primary text-primary">
+          <ShieldCheck className="w-3 h-3" /> Inegociável
+        </Badge>
+      )
+    }
+    return null
   }
 
   return (
@@ -68,8 +95,16 @@ export function SimulationResult({ data, result, onBack }: SimulationResultProps
             </thead>
             <tbody className="divide-y">
               {result.categories.map((c) => (
-                <tr key={c.name} className="hover:bg-muted/30">
-                  <td className="p-3 font-medium whitespace-nowrap">{c.name}</td>
+                <tr
+                  key={c.name}
+                  className={`hover:bg-muted/30 ${c.label === 'Inegociável' ? 'bg-primary/5' : ''}`}
+                >
+                  <td className="p-3 font-medium whitespace-nowrap">
+                    <div className="flex items-center gap-2">
+                      {c.name}
+                      {getLabelBadge(c.label)}
+                    </div>
+                  </td>
                   <td className="p-3">{c.percentage.toFixed(1)}%</td>
                   <td className="p-3 font-semibold text-primary">{formatCurrency(c.value)}</td>
                   <td className="p-3 text-muted-foreground min-w-[200px]">{c.tip}</td>

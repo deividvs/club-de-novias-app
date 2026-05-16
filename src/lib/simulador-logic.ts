@@ -1,12 +1,22 @@
+export interface CustomItem {
+  id: string
+  name: string
+  value: number
+  label?: 'Prioridade' | 'DIY' | 'Inegociável' | null
+}
+
 export interface SimulationData {
   name: string
   totalBudget: number
   guestCount: number
   city: string
   style: string
-  priorities: string[]
-  diy: string[]
-  nonNegotiables: string[]
+  priorities?: string[]
+  diy?: string[]
+  nonNegotiables?: string[]
+  customItems?: CustomItem[]
+  categoryLabels?: Record<string, 'Prioridade' | 'DIY' | 'Inegociável' | null>
+  manualValues?: Record<string, number>
 }
 
 export interface CategoryResult {
@@ -14,6 +24,8 @@ export interface CategoryResult {
   percentage: number
   value: number
   tip: string
+  isCustom?: boolean
+  label?: 'Prioridade' | 'DIY' | 'Inegociável' | null
 }
 
 export interface SimulationResultData {
@@ -98,52 +110,105 @@ export function calculateSimulation(data: SimulationData): SimulationResultData 
     weights['Lembrancinhas'] -= 2
   }
 
-  let surplus = 0
-  const diyCats = new Set<string>()
-  data.diy.forEach((item) => (DIY_MAP[item] || []).forEach((cat) => diyCats.add(cat)))
+  const customItems = data.customItems || []
+  const categoryLabels = data.categoryLabels || {}
+  const manualValues = data.manualValues || {}
 
-  const nonNegCats = new Set<string>()
-  data.nonNegotiables.forEach((item) => {
-    if (NON_NEGOTIABLE_MAP[item]) nonNegCats.add(NON_NEGOTIABLE_MAP[item])
+  let remainingBudget = data.totalBudget
+
+  const categories: CategoryResult[] = []
+
+  customItems.forEach((item) => {
+    remainingBudget -= item.value
+    categories.push({
+      name: item.name,
+      percentage: 0,
+      value: item.value,
+      tip: 'Item personalizado',
+      isCustom: true,
+      label: item.label || null,
+    })
   })
 
-  diyCats.forEach((cat) => {
-    if (!nonNegCats.has(cat)) {
-      const reduction = weights[cat] * 0.4
-      weights[cat] -= reduction
-      surplus += reduction
-    }
-  })
-
-  const priorityCats = new Set<string>()
-  data.priorities.forEach((item) => {
-    if (PRIORITIES_MAP[item]) priorityCats.add(PRIORITIES_MAP[item])
-  })
-
-  if (surplus > 0) {
-    if (priorityCats.size > 0) {
-      const perCat = surplus / priorityCats.size
-      priorityCats.forEach((cat) => {
-        weights[cat] += perCat
-      })
-    } else {
-      weights['Reserva de emergência'] += surplus
-    }
-  }
-
-  if (weights['Reserva de emergência'] < 5) {
-    const diff = 5 - weights['Reserva de emergência']
-    weights['Reserva de emergência'] = 5
-    const others = Object.keys(weights).filter((k) => k !== 'Reserva de emergência')
-    others.forEach((k) => {
-      weights[k] -= diff / others.length
+  if (Object.keys(categoryLabels).length === 0) {
+    data.priorities?.forEach((p) => {
+      if (PRIORITIES_MAP[p]) categoryLabels[PRIORITIES_MAP[p]] = 'Prioridade'
+    })
+    data.diy?.forEach((p) => {
+      ;(DIY_MAP[p] || []).forEach((c) => (categoryLabels[c] = 'DIY'))
+    })
+    data.nonNegotiables?.forEach((p) => {
+      if (NON_NEGOTIABLE_MAP[p]) categoryLabels[NON_NEGOTIABLE_MAP[p]] = 'Inegociável'
     })
   }
 
-  const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0)
-  Object.keys(weights).forEach((k) => {
-    weights[k] = (weights[k] / totalWeight) * 100
+  let surplusWeight = 0
+  const priorityCats = new Set<string>()
+
+  Object.keys(weights).forEach((cat) => {
+    const label = categoryLabels[cat]
+    if (manualValues[cat] !== undefined && label === 'DIY') {
+      remainingBudget -= manualValues[cat]
+      categories.push({
+        name: cat,
+        percentage: 0,
+        value: manualValues[cat],
+        tip: BASE_TIPS[cat] || '',
+        label: 'DIY',
+      })
+      delete weights[cat]
+    } else if (label === 'DIY') {
+      const reduction = weights[cat] * 0.4
+      weights[cat] -= reduction
+      surplusWeight += reduction
+    } else if (label === 'Prioridade') {
+      priorityCats.add(cat)
+    } else if (label === 'Inegociável') {
+      // highlighted as fixed cost
+    }
   })
+
+  if (surplusWeight > 0) {
+    if (priorityCats.size > 0) {
+      const perCat = surplusWeight / priorityCats.size
+      priorityCats.forEach((cat) => {
+        if (weights[cat]) weights[cat] += perCat
+      })
+    } else {
+      if (weights['Reserva de emergência']) weights['Reserva de emergência'] += surplusWeight
+    }
+  }
+
+  if (weights['Reserva de emergência'] !== undefined && weights['Reserva de emergência'] < 5) {
+    const diff = 5 - weights['Reserva de emergência']
+    weights['Reserva de emergência'] = 5
+    const others = Object.keys(weights).filter((k) => k !== 'Reserva de emergência')
+    if (others.length > 0) {
+      others.forEach((k) => {
+        weights[k] -= diff / others.length
+      })
+    }
+  }
+
+  const totalWeight = Object.values(weights).reduce((a, b) => a + b, 0)
+
+  Object.keys(weights).forEach((k) => {
+    const val =
+      remainingBudget > 0 && totalWeight > 0 ? (remainingBudget * weights[k]) / totalWeight : 0
+    categories.push({
+      name: k,
+      percentage: 0,
+      value: val,
+      tip: BASE_TIPS[k] || '',
+      label: categoryLabels[k] || null,
+    })
+  })
+
+  categories.forEach((c) => {
+    c.percentage = data.totalBudget > 0 ? (c.value / data.totalBudget) * 100 : 0
+  })
+
+  categories.sort((a, b) => b.value - a.value)
 
   let viability = '',
     viabilityMessage = ''
@@ -162,15 +227,6 @@ export function calculateSimulation(data: SimulationData): SimulationResultData 
     viability = 'Flexível'
     viabilityMessage = 'Orçamento folgado! Invista mais nos seus não-negociáveis com tranquilidade.'
   }
-
-  const categories = Object.keys(weights)
-    .map((k) => ({
-      name: k,
-      percentage: weights[k],
-      value: (data.totalBudget * weights[k]) / 100,
-      tip: BASE_TIPS[k],
-    }))
-    .sort((a, b) => b.value - a.value)
 
   const alternatives = [0.9, 0.8, 0.7].map((ratio) => {
     const guests = Math.round(data.guestCount * ratio)

@@ -60,6 +60,9 @@ export default function Simulador() {
           priorities: data.priorities,
           diy: data.diy,
           nonNegotiables: data.nonNegotiables,
+          customItems: data.customItems,
+          categoryLabels: data.categoryLabels,
+          manualValues: data.manualValues,
         },
         results_json: results,
       }
@@ -127,6 +130,9 @@ export default function Simulador() {
           priorities: currentSim.selections?.priorities || [],
           diy: currentSim.selections?.diy || [],
           nonNegotiables: currentSim.selections?.nonNegotiables || [],
+          customItems: currentSim.selections?.customItems || [],
+          categoryLabels: currentSim.selections?.categoryLabels || {},
+          manualValues: currentSim.selections?.manualValues || {},
         }
       : undefined
 
@@ -151,6 +157,9 @@ export default function Simulador() {
       priorities: currentSim.selections?.priorities || [],
       diy: currentSim.selections?.diy || [],
       nonNegotiables: currentSim.selections?.nonNegotiables || [],
+      customItems: currentSim.selections?.customItems || [],
+      categoryLabels: currentSim.selections?.categoryLabels || {},
+      manualValues: currentSim.selections?.manualValues || {},
     }
     return (
       <div className="container max-w-4xl py-6">
