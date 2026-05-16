@@ -25,8 +25,8 @@ export function calculateScore(guest: Guest, avgCost: number) {
 export function getScoreLabel(score: number) {
   if (score >= 70) return 'Essencial'
   if (score >= 50) return 'Muito importante'
-  if (score >= 30) return 'Avaliar com cuidado'
-  if (score >= 10) return 'Cortável'
+  if (score >= 30) return 'Avaliar com carinho'
+  if (score >= 10) return 'Pode ficar fora da lista principal'
   return 'Provável corte'
 }
 

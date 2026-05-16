@@ -27,7 +27,7 @@ export function Scenarios({
     {
       name: "Lista 'Sem Culpa'",
       data: semCulpa,
-      desc: 'Sem obrigações sociais de baixo risco e sem colegas distantes.',
+      desc: 'Esta lista prioriza pessoas que realmente fazem parte da história de vocês...',
     },
   ]
 

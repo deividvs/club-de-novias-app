@@ -29,7 +29,7 @@ export function Dashboard({
   let ViabilityIcon = CheckCircle
   if (budgetRatio > 75) {
     viabilityColor = 'text-red-600'
-    viabilityText = `Inviável para R$ ${simulation.total_budget.toFixed(2)}`
+    viabilityText = 'Inviável para casamento econômico'
     ViabilityIcon = AlertTriangle
   } else if (budgetRatio > 55) {
     viabilityColor = 'text-orange-500'
@@ -162,6 +162,19 @@ export function Dashboard({
           </CardContent>
         </Card>
       </div>
+
+      {obligations.length > 5 && (
+        <Card className="shadow-sm border-[#e8dfd5] bg-orange-50 mt-4">
+          <CardContent className="pt-4 flex items-start gap-3 text-orange-800">
+            <Info className="w-5 h-5 shrink-0 mt-0.5" />
+            <div>
+              <strong>Recomendação:</strong> Sua lista tem muitos convidados por obrigação social (
+              {obligations.length} pessoas). Considere reavaliar essas presenças para reduzir os
+              custos em até R$ {savingsObligations.toFixed(2)}.
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   )
 }
