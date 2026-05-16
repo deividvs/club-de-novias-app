@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-16T03:52:40.943Z",
+  "generatedAt": "2026-05-16T03:57:16.870Z",
   "collections": [
     {
       "name": "users",
@@ -29,14 +29,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": [
@@ -115,14 +120,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -197,7 +207,11 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["pending", "partial", "paid"]
+          "selectValues": [
+            "pending",
+            "partial",
+            "paid"
+          ]
         },
         {
           "name": "notes",
@@ -210,14 +224,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -263,7 +282,11 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["high", "medium", "low"]
+          "selectValues": [
+            "high",
+            "medium",
+            "low"
+          ]
         },
         {
           "name": "due_date",
@@ -276,21 +299,30 @@
           "type": "select",
           "required": false,
           "system": false,
-          "selectValues": ["pending", "in_progress", "completed"]
+          "selectValues": [
+            "pending",
+            "in_progress",
+            "completed"
+          ]
         },
         {
           "name": "created",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -360,14 +392,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -419,14 +456,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
@@ -460,21 +502,36 @@
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["família_próxima", "amigo_íntimo", "colega", "obrigação_social"]
+          "selectValues": [
+            "família_próxima",
+            "amigo_íntimo",
+            "colega",
+            "obrigação_social"
+          ]
         },
         {
           "name": "social_risk",
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["baixo", "médio", "alto"]
+          "selectValues": [
+            "baixo",
+            "médio",
+            "alto"
+          ]
         },
         {
           "name": "presence_probability",
           "type": "select",
           "required": true,
           "system": false,
-          "selectValues": ["baixa", "média", "alta", "confirmado", "improvável"]
+          "selectValues": [
+            "baixa",
+            "média",
+            "alta",
+            "confirmado",
+            "improvável"
+          ]
         },
         {
           "name": "individual_cost",
@@ -499,14 +556,19 @@
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate"]
+          "autodateTriggers": [
+            "onCreate"
+          ]
         },
         {
           "name": "updated",
           "type": "autodate",
           "required": false,
           "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
+          "autodateTriggers": [
+            "onCreate",
+            "onUpdate"
+          ]
         }
       ],
       "indexes": []
