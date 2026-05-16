@@ -1,14 +1,5 @@
 import { Outlet, Link, useLocation, useNavigate } from 'react-router-dom'
-import {
-  Home,
-  PieChart,
-  CalendarDays,
-  BookOpen,
-  User,
-  ArrowLeft,
-  Calculator,
-  Users,
-} from 'lucide-react'
+import { Home, PieChart, CalendarDays, User, ArrowLeft, Calculator, Users } from 'lucide-react'
 import { useAppContext } from '@/context/app-context'
 import { useEffect } from 'react'
 import { cn } from '@/lib/utils'
@@ -19,7 +10,6 @@ const NAV_ITEMS = [
   { path: '/simulador', label: 'Simulador', icon: Calculator },
   { path: '/convidados', label: 'Convidados', icon: Users },
   { path: '/cronograma', label: 'Cronograma', icon: CalendarDays },
-  { path: '/biblioteca', label: 'Biblioteca', icon: BookOpen },
   { path: '/perfil', label: 'Perfil', icon: User },
 ]
 

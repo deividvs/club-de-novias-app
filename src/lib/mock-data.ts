@@ -1,27 +1,6 @@
 import { addMonths, subMonths, format } from 'date-fns'
 import type { Task, Expense } from './types'
 
-export const LIBRARY_ARTICLES = [
-  {
-    category: 'Sistema 3C',
-    title: 'O Método: Cortar, Trocar, Conservar',
-    content:
-      'Aprenda a classificar cada gasto do seu casamento. Corte o desnecessário, troque opções caras por criativas, e conserve o que é prioridade.',
-  },
-  {
-    category: 'Scripts',
-    title: 'Negociação com Buffet',
-    content:
-      'Olá [Nome], adoramos o espaço! Nosso orçamento para esta categoria é X. Existe a possibilidade de adequar o pacote retirando [item] para chegarmos neste valor?',
-  },
-  {
-    category: 'Família',
-    title: 'Lidando com palpites',
-    content:
-      'Mãe/Sogra, agradecemos muito a sugestão! Vamos avaliar com carinho, mas já fechamos o planejamento principal para manter nosso orçamento sob controle.',
-  },
-]
-
 export const generateMockTasks = (weddingDateStr: string): Task[] => {
   const wDate = new Date(weddingDateStr || new Date())
   return [

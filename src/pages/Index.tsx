@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { PlusCircle, Calendar as CalIcon, MessageCircle, Library, Circle } from 'lucide-react'
+import { PlusCircle, Calendar as CalIcon, MessageCircle, Circle } from 'lucide-react'
 import { Card, CardContent } from '@/components/ui/card'
 import { useAppContext } from '@/context/app-context'
 import { formatCurrency, getDaysLeft } from '@/lib/utils'
@@ -113,7 +113,6 @@ export default function Index() {
             { icon: PlusCircle, label: 'Add Gasto', to: '/orcamento' },
             { icon: CalIcon, label: 'Cronograma', to: '/cronograma' },
             { icon: MessageCircle, label: 'Comunidade', to: '/perfil' },
-            { icon: Library, label: 'Biblioteca', to: '/biblioteca' },
           ].map((item, i) => (
             <Link
               key={i}

@@ -14,7 +14,6 @@ import Orcamento from './pages/Orcamento'
 import Simulador from './pages/Simulador'
 import Convidados from './pages/Convidados'
 import Cronograma from './pages/Cronograma'
-import Biblioteca from './pages/Biblioteca'
 import Perfil from './pages/Perfil'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
@@ -46,7 +45,6 @@ const App = () => (
               <Route path="/simulador" element={<Simulador />} />
               <Route path="/convidados" element={<Convidados />} />
               <Route path="/cronograma" element={<Cronograma />} />
-              <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/perfil" element={<Perfil />} />
             </Route>
             <Route path="*" element={<NotFound />} />

@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-16T03:37:33.647Z",
+  "generatedAt": "2026-05-16T03:41:02.103Z",
   "collections": [
     {
       "name": "users",
@@ -277,64 +277,6 @@
           "required": false,
           "system": false,
           "selectValues": ["pending", "in_progress", "completed"]
-        },
-        {
-          "name": "created",
-          "type": "autodate",
-          "required": false,
-          "system": false,
-          "autodateTriggers": ["onCreate"]
-        },
-        {
-          "name": "updated",
-          "type": "autodate",
-          "required": false,
-          "system": false,
-          "autodateTriggers": ["onCreate", "onUpdate"]
-        }
-      ],
-      "indexes": []
-    },
-    {
-      "name": "library_articles",
-      "type": "base",
-      "apiRules": {
-        "list": "@request.auth.id != ''",
-        "view": "@request.auth.id != ''",
-        "create": null,
-        "update": null,
-        "delete": null
-      },
-      "fields": [
-        {
-          "name": "slug",
-          "type": "text",
-          "required": true,
-          "system": false
-        },
-        {
-          "name": "section",
-          "type": "text",
-          "required": false,
-          "system": false
-        },
-        {
-          "name": "title",
-          "type": "text",
-          "required": false,
-          "system": false
-        },
-        {
-          "name": "content_markdown",
-          "type": "text",
-          "required": false,
-          "system": false
-        },
-        {
-          "name": "order",
-          "type": "number",
-          "required": false,
-          "system": false
         },
         {
           "name": "created",
