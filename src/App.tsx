@@ -12,6 +12,7 @@ import Index from './pages/Index'
 import Onboarding from './pages/Onboarding'
 import Orcamento from './pages/Orcamento'
 import Simulador from './pages/Simulador'
+import Convidados from './pages/Convidados'
 import Cronograma from './pages/Cronograma'
 import Biblioteca from './pages/Biblioteca'
 import Perfil from './pages/Perfil'
@@ -43,6 +44,7 @@ const App = () => (
               <Route path="/onboarding" element={<Onboarding />} />
               <Route path="/orcamento" element={<Orcamento />} />
               <Route path="/simulador" element={<Simulador />} />
+              <Route path="/convidados" element={<Convidados />} />
               <Route path="/cronograma" element={<Cronograma />} />
               <Route path="/biblioteca" element={<Biblioteca />} />
               <Route path="/perfil" element={<Perfil />} />

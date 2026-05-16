@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-05-16T03:17:03.362Z",
+  "generatedAt": "2026-05-16T03:28:38.424Z",
   "collections": [
     {
       "name": "users",
@@ -410,6 +410,145 @@
         {
           "name": "results_json",
           "type": "json",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "guest_simulations",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && wedding_id.user_id = @request.auth.id",
+        "view": "@request.auth.id != '' && wedding_id.user_id = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && wedding_id.user_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && wedding_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "wedding_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "weddings"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "total_budget",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "cost_per_person",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "guest_budget_meta",
+          "type": "number",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "created",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate"]
+        },
+        {
+          "name": "updated",
+          "type": "autodate",
+          "required": false,
+          "system": false,
+          "autodateTriggers": ["onCreate", "onUpdate"]
+        }
+      ],
+      "indexes": []
+    },
+    {
+      "name": "guests",
+      "type": "base",
+      "apiRules": {
+        "list": "@request.auth.id != '' && simulation_id.wedding_id.user_id = @request.auth.id",
+        "view": "@request.auth.id != '' && simulation_id.wedding_id.user_id = @request.auth.id",
+        "create": "@request.auth.id != ''",
+        "update": "@request.auth.id != '' && simulation_id.wedding_id.user_id = @request.auth.id",
+        "delete": "@request.auth.id != '' && simulation_id.wedding_id.user_id = @request.auth.id"
+      },
+      "fields": [
+        {
+          "name": "simulation_id",
+          "type": "relation",
+          "required": true,
+          "system": false,
+          "collectionRef": "guest_simulations"
+        },
+        {
+          "name": "name",
+          "type": "text",
+          "required": true,
+          "system": false
+        },
+        {
+          "name": "relationship_group",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["família_próxima", "amigo_íntimo", "colega", "obrigação_social"]
+        },
+        {
+          "name": "social_risk",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["baixo", "médio", "alto"]
+        },
+        {
+          "name": "presence_probability",
+          "type": "select",
+          "required": true,
+          "system": false,
+          "selectValues": ["baixa", "média", "alta", "confirmado", "improvável"]
+        },
+        {
+          "name": "individual_cost",
+          "type": "number",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "notes",
+          "type": "text",
+          "required": false,
+          "system": false
+        },
+        {
+          "name": "manual_status",
+          "type": "text",
           "required": false,
           "system": false
         },
