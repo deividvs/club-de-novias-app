@@ -38,7 +38,9 @@ export function SetupForm({ onComplete }: { onComplete: () => void }) {
   return (
     <div className="max-w-md mx-auto py-12">
       <div className="bg-card border rounded-2xl p-6 shadow-sm">
-        <h2 className="text-2xl font-display font-bold text-primary mb-2">Configuração da Lista</h2>
+        <h2 className="text-2xl font-display font-bold text-[#8a7a6c] mb-2">
+          Configuração da Lista
+        </h2>
         <p className="text-muted-foreground text-sm mb-6">
           Para começar a otimizar seus convidados, precisamos de alguns dados financeiros base.
         </p>

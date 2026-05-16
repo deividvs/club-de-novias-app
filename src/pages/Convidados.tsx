@@ -102,15 +102,22 @@ export default function Convidados() {
   const exportCSV = () => {
     if (!guests.length) return
     const headers = ['Nome', 'Grupo', 'Risco', 'Presença', 'Custo', 'Status Manual', 'Notas']
+
+    const escapeCsv = (val: any) => {
+      if (val === null || val === undefined) return '""'
+      const str = String(val)
+      return `"${str.replace(/"/g, '""')}"`
+    }
+
     const rows = guests.map((g) =>
       [
-        g.name,
-        g.relationship_group,
-        g.social_risk,
-        g.presence_probability,
-        g.individual_cost,
-        g.manual_status,
-        g.notes,
+        escapeCsv(g.name),
+        escapeCsv(g.relationship_group),
+        escapeCsv(g.social_risk),
+        escapeCsv(g.presence_probability),
+        escapeCsv(g.individual_cost || simulation?.cost_per_person || 0),
+        escapeCsv(g.manual_status),
+        escapeCsv(g.notes),
       ].join(','),
     )
     const csvContent = 'data:text/csv;charset=utf-8,' + [headers.join(','), ...rows].join('\n')
@@ -130,10 +137,10 @@ export default function Convidados() {
     <div className="container py-8 max-w-5xl">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 print:hidden">
         <div>
-          <h1 className="text-3xl font-display font-bold text-primary">
+          <h1 className="text-3xl font-display font-bold text-[#8a7a6c]">
             Lista Inteligente de Convidados
           </h1>
-          <p className="text-muted-foreground mt-1 text-sm">
+          <p className="text-[#a09385] mt-1 text-sm">
             Descubra quem realmente precisa estar no seu casamento e quanto cada escolha impacta no
             seu orçamento.
           </p>

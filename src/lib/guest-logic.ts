@@ -52,12 +52,14 @@ export function getScenarios(guests: Guest[], avgCost: number, budgetMeta: numbe
   const enxuta = scored.filter(
     (g) =>
       g.score > 50 &&
-      (g.relationship_group === 'família_próxima' || g.relationship_group === 'amigo_íntimo'),
+      (g.relationship_group === 'família_próxima' || g.relationship_group === 'amigo_íntimo') &&
+      (g.presence_probability === 'confirmado' || g.presence_probability === 'alta'),
   )
 
   const semCulpa = scored.filter((g) => {
     if (g.relationship_group === 'obrigação_social') return false
     if (g.relationship_group === 'colega' && g.social_risk === 'baixo') return false
+    if (g.presence_probability === 'improvável') return false
     return true
   })
 

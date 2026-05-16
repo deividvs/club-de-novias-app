@@ -6,7 +6,7 @@ export function MessageCard() {
   const [copied, setCopied] = useState(false)
 
   const mensagem =
-    'Estamos organizando uma celebração bem íntima, apenas para familiares e pessoas muito próximas... você é uma pessoa querida e ficamos felizes por fazer parte da nossa história.'
+    'Estamos organizando uma celebração bem íntima, apenas para familiares e pessoas muito próximas, por uma questão de espaço e planejamento. Mesmo assim, você é uma pessoa querida e ficamos felizes por fazer parte da nossa história.'
 
   const handleCopy = () => {
     navigator.clipboard.writeText(mensagem)

@@ -54,8 +54,11 @@ export function GuestTable({
               <tr>
                 <th className="px-4 py-3 font-medium">Nome</th>
                 <th className="px-4 py-3 font-medium">Grupo</th>
+                <th className="px-4 py-3 font-medium">Risco Social</th>
+                <th className="px-4 py-3 font-medium">Presença</th>
                 <th className="px-4 py-3 font-medium text-center">Score</th>
-                <th className="px-4 py-3 font-medium">Prioridade</th>
+                <th className="px-4 py-3 font-medium">Recomendação</th>
+                <th className="px-4 py-3 font-medium">Status</th>
                 <th className="px-4 py-3 font-medium text-right">Custo</th>
                 <th className="px-4 py-3 font-medium text-right print:hidden">Ações</th>
               </tr>
@@ -63,7 +66,7 @@ export function GuestTable({
             <tbody className="divide-y">
               {guests.length === 0 ? (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">
+                  <td colSpan={9} className="px-4 py-8 text-center text-muted-foreground">
                     Nenhum convidado adicionado ainda.
                   </td>
                 </tr>
@@ -77,14 +80,19 @@ export function GuestTable({
                       <td className="px-4 py-3 capitalize">
                         {g.relationship_group.replace('_', ' ')}
                       </td>
+                      <td className="px-4 py-3 capitalize">{g.social_risk}</td>
+                      <td className="px-4 py-3 capitalize">{g.presence_probability}</td>
                       <td className="px-4 py-3 text-center">
                         <span className="inline-flex items-center rounded-md border px-2.5 py-0.5 text-xs font-semibold font-mono bg-secondary/50 text-secondary-foreground">
                           {score}
                         </span>
                       </td>
                       <td className="px-4 py-3">{getScoreLabel(score)}</td>
-                      <td className="px-4 py-3 text-right">R$ {cost.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-right print:hidden">
+                      <td className="px-4 py-3 text-muted-foreground">{g.manual_status || '-'}</td>
+                      <td className="px-4 py-3 text-right whitespace-nowrap">
+                        R$ {cost.toFixed(2)}
+                      </td>
+                      <td className="px-4 py-3 text-right print:hidden whitespace-nowrap">
                         <Button variant="ghost" size="icon" onClick={() => openEdit(g)}>
                           <Edit2 className="w-4 h-4 text-muted-foreground" />
                         </Button>
