@@ -110,7 +110,6 @@ export default function Convidados() {
       'Score',
       'Recomendação',
       'Custo',
-      'Status Manual',
       'Notas',
     ]
 
@@ -130,7 +129,6 @@ export default function Convidados() {
         escapeCsv(score),
         escapeCsv(getScoreLabel(score)),
         escapeCsv(g.individual_cost || simulation?.cost_per_person || 0),
-        escapeCsv(g.manual_status),
         escapeCsv(g.notes),
       ].join(',')
     })

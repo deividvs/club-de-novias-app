@@ -1,7 +1,15 @@
 import type { GuestSimulation, Guest } from '@/services/convidados'
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'
 import { cn } from '@/lib/utils'
-import { AlertTriangle, CheckCircle, Info, Users, DollarSign, TrendingDown } from 'lucide-react'
+import {
+  AlertTriangle,
+  CheckCircle,
+  Info,
+  Users,
+  DollarSign,
+  TrendingDown,
+  Wallet,
+} from 'lucide-react'
 
 export function Dashboard({
   simulation,
@@ -41,28 +49,56 @@ export function Dashboard({
     .filter((g) => g.relationship_group === 'obrigação_social')
     .reduce((acc, g) => acc + (g.individual_cost || simulation.cost_per_person), 0)
 
+  const diffBudget = simulation.total_budget - totalCost
+  const statusOrçamentoText = diffBudget >= 0 ? 'sobra' : 'passa'
+
   return (
     <div className="space-y-6">
+      {/* Financial Summary Card */}
+      <Card className="bg-[#fdfaf6] border-[#e8dfd5] shadow-sm">
+        <CardHeader className="pb-3">
+          <CardTitle className="text-xl font-display font-bold text-[#8a7a6c] flex items-center gap-2">
+            <Wallet className="w-5 h-5 text-[#c8a97e]" /> Resumo Financeiro
+          </CardTitle>
+          <CardDescription className="text-[#a09385]">
+            Impacto da sua lista de convidados no orçamento geral do casamento.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <p className="text-base text-[#5c544d]">
+            Com <strong className="text-[#8a7a6c]">{guests.length}</strong> convidados a
+            <strong className="text-[#8a7a6c]"> R$ {simulation.cost_per_person.toFixed(2)}</strong>{' '}
+            por pessoa (em média), sua lista completa custa{' '}
+            <strong className="text-[#8a7a6c]">R$ {totalCost.toFixed(2)}</strong>. Isso{' '}
+            <strong className={diffBudget >= 0 ? 'text-green-600' : 'text-red-600'}>
+              {statusOrçamentoText}
+            </strong>{' '}
+            do seu orçamento total de
+            <strong className="text-[#8a7a6c]"> R$ {simulation.total_budget.toFixed(2)}</strong>.
+          </p>
+        </CardContent>
+      </Card>
+
       <div className="grid md:grid-cols-3 gap-4">
-        <Card className="bg-primary/5 border-primary/20">
+        <Card className="shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <Users className="w-4 h-4 text-primary" /> Total de Convidados
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-[#8a7a6c]">
+              <Users className="w-4 h-4 text-[#c8a97e]" /> Total de Convidados
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-bold">{guests.length}</div>
+            <div className="text-3xl font-display font-bold text-[#5c544d]">{guests.length}</div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
-              <DollarSign className="w-4 h-4 text-muted-foreground" /> Custo Estimado
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-[#8a7a6c]">
+              <DollarSign className="w-4 h-4 text-[#c8a97e]" /> Custo Estimado
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-display font-bold text-foreground">
+            <div className="text-3xl font-display font-bold text-[#5c544d]">
               R$ {totalCost.toFixed(2)}
             </div>
             <p className="text-xs text-muted-foreground mt-1">
@@ -72,7 +108,7 @@ export function Dashboard({
         </Card>
 
         <Card
-          className={cn('border-l-4', {
+          className={cn('shadow-sm border-l-4', {
             'border-l-green-500': budgetRatio <= 40,
             'border-l-yellow-500': budgetRatio > 40 && budgetRatio <= 55,
             'border-l-orange-500': budgetRatio > 55 && budgetRatio <= 75,
@@ -80,7 +116,7 @@ export function Dashboard({
           })}
         >
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+            <CardTitle className="text-sm font-medium flex items-center gap-2 text-[#8a7a6c]">
               <ViabilityIcon className={cn('w-4 h-4', viabilityColor)} /> Indicador de Viabilidade
             </CardTitle>
           </CardHeader>
@@ -93,9 +129,9 @@ export function Dashboard({
         </Card>
       </div>
 
-      <h3 className="text-lg font-medium mt-6 mb-3">Cartões de Economia</h3>
+      <h3 className="text-lg font-medium text-[#8a7a6c] mt-6 mb-3">Cartões de Economia</h3>
       <div className="grid md:grid-cols-2 gap-4">
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
               <TrendingDown className="w-4 h-4" /> Se remover todos os colegas...
@@ -107,7 +143,7 @@ export function Dashboard({
             </div>
           </CardContent>
         </Card>
-        <Card>
+        <Card className="shadow-sm">
           <CardHeader className="pb-2">
             <CardTitle className="text-sm font-medium flex items-center gap-2 text-muted-foreground">
               <TrendingDown className="w-4 h-4" /> Se remover obrigações sociais...

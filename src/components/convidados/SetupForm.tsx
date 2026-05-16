@@ -66,7 +66,7 @@ export function SetupForm({ onComplete }: { onComplete: () => void }) {
           </div>
           <div className="space-y-2">
             <Label>Meta para Convidados (R$)</Label>
-            <Input type="number" value={budgetMeta} disabled />
+            <Input type="number" value={budgetMeta} disabled className="bg-muted" />
             <p className="text-xs text-muted-foreground">
               Sugerimos entre 40% a 50% do orçamento total.
             </p>

@@ -28,9 +28,8 @@ export function GuestForm({
     relationship_group: guest?.relationship_group || 'amigo_íntimo',
     social_risk: guest?.social_risk || 'baixo',
     presence_probability: guest?.presence_probability || 'alta',
-    individual_cost: guest?.individual_cost || 0,
+    individual_cost: guest?.individual_cost || simulation.cost_per_person,
     notes: guest?.notes || '',
-    manual_status: guest?.manual_status || '',
   })
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -59,7 +58,7 @@ export function GuestForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-4 py-4">
       <div className="space-y-2">
-        <Label>Nome</Label>
+        <Label>Nome do convidado</Label>
         <Input
           required
           value={formData.name}
@@ -67,9 +66,9 @@ export function GuestForm({
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label>Grupo</Label>
+          <Label>Grupo de relacionamento</Label>
           <Select
             value={formData.relationship_group}
             onValueChange={(v: any) => setFormData({ ...formData, relationship_group: v })}
@@ -87,7 +86,7 @@ export function GuestForm({
         </div>
 
         <div className="space-y-2">
-          <Label>Risco de Exclusão</Label>
+          <Label>Risco de climão se não convidar</Label>
           <Select
             value={formData.social_risk}
             onValueChange={(v: any) => setFormData({ ...formData, social_risk: v })}
@@ -104,7 +103,7 @@ export function GuestForm({
         </div>
 
         <div className="space-y-2">
-          <Label>Prob. de Presença</Label>
+          <Label>Presença provável</Label>
           <Select
             value={formData.presence_probability}
             onValueChange={(v: any) => setFormData({ ...formData, presence_probability: v })}
@@ -123,35 +122,25 @@ export function GuestForm({
         </div>
 
         <div className="space-y-2">
-          <Label>Custo (Opcional)</Label>
+          <Label>Custo individual (R$)</Label>
           <Input
             type="number"
-            placeholder={String(simulation.cost_per_person)}
             value={formData.individual_cost || ''}
             onChange={(e) => setFormData({ ...formData, individual_cost: Number(e.target.value) })}
           />
         </div>
       </div>
 
-      <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label>Status Manual</Label>
-          <Input
-            value={formData.manual_status}
-            onChange={(e) => setFormData({ ...formData, manual_status: e.target.value })}
-            placeholder="Ex: Pendente"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label>Notas</Label>
-          <Input
-            value={formData.notes}
-            onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-          />
-        </div>
+      <div className="space-y-2">
+        <Label>Observações</Label>
+        <Input
+          value={formData.notes}
+          onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+          placeholder="Alguma nota importante?"
+        />
       </div>
 
-      <Button type="submit" className="w-full" disabled={loading}>
+      <Button type="submit" className="w-full bg-[#8a7a6c] hover:bg-[#726456]" disabled={loading}>
         {loading ? 'Salvando...' : 'Salvar'}
       </Button>
     </form>

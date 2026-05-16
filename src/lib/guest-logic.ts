@@ -17,7 +17,7 @@ export function calculateScore(guest: Guest, avgCost: number) {
   if (guest.presence_probability === 'improvável') score -= 15
 
   const cost = guest.individual_cost || avgCost
-  if (cost > avgCost) score -= 5
+  if (cost > avgCost) score += 0 // Default per requirements
 
   return score
 }
