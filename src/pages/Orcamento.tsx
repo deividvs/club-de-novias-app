@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Plus, Download } from 'lucide-react'
+import { Plus, Download, Trash2 } from 'lucide-react'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import {
@@ -18,6 +19,17 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
 import { BudgetChart } from '@/components/budget/BudgetChart'
 import { useAppContext } from '@/context/app-context'
 import { formatCurrency } from '@/lib/utils'
@@ -36,7 +48,7 @@ const CATEGORIES: { name: ExpenseCategory; color: string; defaultTarget: number 
 ]
 
 export default function Orcamento() {
-  const { user, expenses, addExpense, toggleExpensePaid } = useAppContext()
+  const { user, expenses, addExpense, toggleExpensePaid, removeExpense } = useAppContext()
   const [open, setOpen] = useState(false)
   const [newExpense, setNewExpense] = useState({
     category: 'Espaço',
@@ -70,6 +82,11 @@ export default function Orcamento() {
     })
     setOpen(false)
     setNewExpense({ category: 'Espaço', description: '', amount: '', vendorName: '' })
+  }
+
+  const handleDelete = (id: string) => {
+    removeExpense(id)
+    toast.success('Despesa excluída com sucesso!')
   }
 
   return (
@@ -191,6 +208,37 @@ export default function Orcamento() {
                         >
                           {exp.paid ? 'Pago' : 'Pendente'}
                         </Button>
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-7 w-7 text-muted-foreground hover:text-destructive"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Tem certeza que deseja excluir esta despesa?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                Esta ação não pode ser desfeita. A despesa será removida
+                                permanentemente do seu orçamento.
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Cancelar</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={() => handleDelete(exp.id)}
+                                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                              >
+                                Excluir
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
                       </div>
                     </div>
                   ))}

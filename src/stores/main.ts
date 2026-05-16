@@ -44,6 +44,7 @@ type AppStore = AppState & {
   completeOnboarding: (data: Partial<AppState>) => void
   toggleTask: (id: string) => void
   addExpense: (expense: Omit<Expense, 'id'>) => void
+  removeExpense: (id: string) => void
   updateProfile: (data: Partial<AppState>) => void
 }
 
@@ -180,6 +181,13 @@ export function AppProvider({ children }: { children: ReactNode }) {
     }))
   }
 
+  const removeExpense = (id: string) => {
+    setState((prev) => ({
+      ...prev,
+      expenses: prev.expenses.filter((e) => e.id !== id),
+    }))
+  }
+
   const updateProfile = (data: Partial<AppState>) => {
     setState((prev) => ({ ...prev, ...data }))
   }
@@ -192,6 +200,7 @@ export function AppProvider({ children }: { children: ReactNode }) {
         completeOnboarding,
         toggleTask,
         addExpense,
+        removeExpense,
         updateProfile,
       },
     },

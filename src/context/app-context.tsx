@@ -10,6 +10,7 @@ type AppContextType = {
   expenses: Expense[]
   addExpense: (expense: Expense) => void
   toggleExpensePaid: (id: string) => void
+  removeExpense: (id: string) => void
 }
 
 const defaultUser: UserProfile = {
@@ -67,9 +68,22 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
     setExpenses((prev) => prev.map((e) => (e.id === id ? { ...e, paid: !e.paid } : e)))
   }
 
+  const removeExpense = (id: string) => {
+    setExpenses((prev) => prev.filter((e) => e.id !== id))
+  }
+
   return (
     <AppContext.Provider
-      value={{ user, setUser, tasks, toggleTask, expenses, addExpense, toggleExpensePaid }}
+      value={{
+        user,
+        setUser,
+        tasks,
+        toggleTask,
+        expenses,
+        addExpense,
+        toggleExpensePaid,
+        removeExpense,
+      }}
     >
       {children}
     </AppContext.Provider>
