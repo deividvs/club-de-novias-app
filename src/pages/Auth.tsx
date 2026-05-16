@@ -11,18 +11,26 @@ export default function AuthPage() {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+  const [fieldErrors, setFieldErrors] = useState<{ email?: string }>({})
   const { signIn, signUp } = useAuth()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setFieldErrors({})
     if (!email || !password) return toast.error('Preencha todos os campos')
     setLoading(true)
     const { error } = isLogin ? await signIn(email, password) : await signUp(email, password)
     setLoading(false)
     if (error) {
-      toast.error('Erro de autenticação', {
-        description: error.message || 'Verifique suas credenciais.',
-      })
+      if (!isLogin && error?.response?.data?.email?.code === 'validation_not_unique') {
+        setFieldErrors({
+          email: 'Este e-mail já está em uso. Tente fazer login ou use outro e-mail.',
+        })
+      } else {
+        toast.error('Erro de autenticação', {
+          description: error.message || 'Verifique suas credenciais.',
+        })
+      }
     }
   }
 
@@ -45,8 +53,12 @@ export default function AuthPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
+                className={
+                  fieldErrors.email ? 'border-destructive focus-visible:ring-destructive' : ''
+                }
                 required
               />
+              {fieldErrors.email && <p className="text-sm text-destructive">{fieldErrors.email}</p>}
             </div>
             <div className="space-y-2 text-left">
               <Label>Senha</Label>
@@ -68,7 +80,10 @@ export default function AuthPage() {
           <div className="mt-6 text-center">
             <button
               type="button"
-              onClick={() => setIsLogin(!isLogin)}
+              onClick={() => {
+                setIsLogin(!isLogin)
+                setFieldErrors({})
+              }}
               className="text-sm text-muted-foreground hover:text-primary transition-colors"
             >
               {isLogin ? 'Não tem conta? Cadastre-se' : 'Já tem conta? Entre aqui'}
